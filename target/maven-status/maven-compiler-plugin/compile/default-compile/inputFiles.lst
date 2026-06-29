@@ -1,0 +1,11 @@
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/App.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/dao/BaseDAO.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/dao/GenericDAO.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/dao/ItemDAO.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/db/DatabaseConnection.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/db/DatabaseInitializer.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/model/Item.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/ui/MainWindow.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/ui/NavigationController.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/ui/view/FormView.java
+/mnt/WindowsDrive/Fedora/Projects/Java-hackathon/src/main/java/com/hackathon/ui/view/TableView.java

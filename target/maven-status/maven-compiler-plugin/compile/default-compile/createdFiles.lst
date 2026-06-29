@@ -1,0 +1,14 @@
+com/hackathon/ui/MainWindow.class
+com/hackathon/model/Item.class
+com/hackathon/dao/BaseDAO$RowMapper.class
+com/hackathon/ui/NavigationController.class
+com/hackathon/db/DatabaseConnection.class
+com/hackathon/dao/BaseDAO.class
+com/hackathon/App.class
+com/hackathon/db/DatabaseInitializer.class
+com/hackathon/ui/view/TableView$ItemTableModel.class
+com/hackathon/dao/GenericDAO.class
+com/hackathon/dao/ItemDAO.class
+com/hackathon/ui/view/FormView.class
+com/hackathon/ui/NavigationController$ViewLifecycle.class
+com/hackathon/ui/view/TableView.class
