@@ -60,7 +60,6 @@ public class MainWindow extends JFrame {
         // Register views
         nav.registerView("RoleSelection", new RoleSelectionView(nav, this));
         nav.registerView("StudentView", new StudentView(nav));
-        nav.registerView("LeaderboardView", new com.hackathon.ui.view.LeaderboardView(nav));
         nav.registerView("EvaluatorView", new EvaluatorView(nav));
         nav.registerView("AdminView", adminWrapper);
 

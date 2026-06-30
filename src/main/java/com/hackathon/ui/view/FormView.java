@@ -11,7 +11,7 @@ public class FormView extends JPanel {
     private JTextField usnField, nameField, batchField, teamNoField, topicField;
     private JTextField dsaField, adaField, dbmsField, mathField, pythonField, javaField, sipField;
     
-    private JLabel totalLabel, gradeLabel;
+    private JLabel totalLabel, averageLabel, gradeLabel;
 
     private JButton calculateButton, saveButton, clearButton;
 
