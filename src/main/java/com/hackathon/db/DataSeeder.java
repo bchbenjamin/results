@@ -10,14 +10,15 @@ import com.hackathon.model.Student;
 
 /**
  * Utility to seed the database with initial CSV data.
- * Adapted for the simple 3-subject student result schema.
  */
 public class DataSeeder {
 
     public static void seedAllData() {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            System.out.println("Starting data seeding process for Student Results...");
-            seedStudents(conn, "dataset/cleaned_data.csv");
+            System.out.println("Starting data seeding process...");
+            seedEvaluators(conn, "dataset/evaluators.csv");
+            seedSIPMapping(conn, "dataset/sip_mentor_allocations.csv");
+            seedStudentsAndMarks(conn, "dataset/cleaned_data.csv");
             System.out.println("Data seeding completed successfully.");
         } catch (SQLException e) {
             System.err.println("Error during data seeding: " + e.getMessage());
@@ -25,54 +26,109 @@ public class DataSeeder {
         }
     }
 
-    private static void seedStudents(Connection conn, String filePath) {
-        String sql = "MERGE INTO student_results (usn, name, email, sub1, sub2, sub3, total, average, grade) KEY(usn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
+    private static void seedEvaluators(Connection conn, String filePath) {
+        String sql = "MERGE INTO Evaluators (Evaluator_ID, Name, Core_Subject) KEY(Evaluator_ID) VALUES (?, ?, ?)";
         try (BufferedReader br = new BufferedReader(new FileReader(filePath));
              PreparedStatement ps = conn.prepareStatement(sql)) {
+            String line;
+            boolean first = true;
+            while ((line = br.readLine()) != null) {
+                if (first) { first = false; continue; }
+                String[] values = line.split(",");
+                if (values.length >= 3) {
+                    ps.setString(1, values[0].trim());
+                    ps.setString(2, values[1].trim());
+                    ps.setString(3, values[2].trim());
+                    ps.addBatch();
+                }
+            }
+            ps.executeBatch();
+            System.out.println("Evaluators seeded.");
+        } catch (IOException | SQLException e) {
+            System.err.println("Failed to seed evaluators: " + e.getMessage());
+        }
+    }
+
+    private static void seedSIPMapping(Connection conn, String filePath) {
+        String sql = "MERGE INTO SIP_Mapping (Topic, Evaluator_ID) KEY(Topic) VALUES (?, ?)";
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath));
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            String line;
+            boolean first = true;
+            while ((line = br.readLine()) != null) {
+                if (first) { first = false; continue; }
+                String[] values = line.split(",");
+                if (values.length >= 2) {
+                    ps.setString(1, values[0].trim());
+                    ps.setString(2, values[1].trim());
+                    ps.addBatch();
+                }
+            }
+            ps.executeBatch();
+            System.out.println("SIP mapping seeded.");
+        } catch (IOException | SQLException e) {
+            System.err.println("Failed to seed SIP mapping: " + e.getMessage());
+        }
+    }
+
+    private static void seedStudentsAndMarks(Connection conn, String filePath) {
+        String sqlStudent = "MERGE INTO Students (USN, Name, Batch, Team_No, Topic) KEY(USN) VALUES (?, ?, ?, ?, ?)";
+        String sqlMarks = "MERGE INTO Marks (USN, DSA, ADA, DBMS, Math, Python, Java, SIP, Total_Score) KEY(USN) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath));
+             PreparedStatement psStudent = conn.prepareStatement(sqlStudent);
+             PreparedStatement psMarks = conn.prepareStatement(sqlMarks)) {
             
             String line;
             boolean firstLine = true;
             while ((line = br.readLine()) != null) {
-                if (firstLine) { firstLine = false; continue; } // Skip header
+                if (firstLine) { firstLine = false; continue; } 
                 
                 String[] values = line.split(",");
-                // Assuming CSV is: Team_No,Batch,Name,USN,Topic,DSA,ADA,DBMS,Math,Python,Java,SIP,Total
-                // We will map: Name->values[2], USN->values[3], Sub1(DSA)->values[5], Sub2(ADA)->values[6], Sub3(DBMS)->values[7]
-                if (values.length >= 8) {
+                // Team_No(0),Batch(1),Name(2),USN(3),Topic(4),DSA(5),ADA(6),DBMS(7),Math(8),Python(9),Java(10),SIP(11),Total(12)
+                if (values.length >= 12) {
                     try {
+                        int teamNo = Integer.parseInt(values[0].trim());
+                        int batch = Integer.parseInt(values[1].trim());
                         String name = values[2].trim();
                         String usn = values[3].trim();
-                        // Generate a mock email since it's not in the dataset
-                        String email = usn.toLowerCase() + "@student.edu";
+                        String topic = values[4].trim();
                         
-                        double sub1 = Double.parseDouble(values[5].trim());
-                        double sub2 = Double.parseDouble(values[6].trim());
-                        double sub3 = Double.parseDouble(values[7].trim());
+                        double dsa = Double.parseDouble(values[5].trim());
+                        double ada = Double.parseDouble(values[6].trim());
+                        double dbms = Double.parseDouble(values[7].trim());
+                        double math = Double.parseDouble(values[8].trim());
+                        double python = Double.parseDouble(values[9].trim());
+                        double javaMarks = Double.parseDouble(values[10].trim());
+                        double sip = Double.parseDouble(values[11].trim());
                         
-                        // Use the OOP model to calculate derived fields!
-                        Student temp = new Student(usn, name, email, sub1, sub2, sub3);
+                        Student temp = new Student(usn, name, batch, teamNo, topic, dsa, ada, dbms, math, python, javaMarks, sip);
                         
-                        ps.setString(1, temp.getUsn());
-                        ps.setString(2, temp.getName());
-                        ps.setString(3, temp.getEmail());
-                        ps.setDouble(4, temp.getSub1());
-                        ps.setDouble(5, temp.getSub2());
-                        ps.setDouble(6, temp.getSub3());
-                        ps.setDouble(7, temp.getTotal());
-                        ps.setDouble(8, temp.getAverage());
-                        ps.setString(9, temp.getGrade());
+                        psStudent.setString(1, temp.getUsn());
+                        psStudent.setString(2, temp.getName());
+                        psStudent.setInt(3, temp.getBatch());
+                        psStudent.setInt(4, temp.getTeamNo());
+                        psStudent.setString(5, temp.getTopic());
+                        psStudent.addBatch();
                         
-                        ps.addBatch();
-                    } catch (NumberFormatException ignored) {
-                        // Skip malformed rows
-                    }
+                        psMarks.setString(1, temp.getUsn());
+                        psMarks.setDouble(2, temp.getDsa());
+                        psMarks.setDouble(3, temp.getAda());
+                        psMarks.setDouble(4, temp.getDbms());
+                        psMarks.setDouble(5, temp.getMath());
+                        psMarks.setDouble(6, temp.getPython());
+                        psMarks.setDouble(7, temp.getJavaMarks());
+                        psMarks.setDouble(8, temp.getSip());
+                        psMarks.setDouble(9, temp.getTotalScore());
+                        psMarks.addBatch();
+                    } catch (NumberFormatException ignored) {}
                 }
             }
-            ps.executeBatch();
-            System.out.println("Student results seeded.");
+            psStudent.executeBatch();
+            psMarks.executeBatch();
+            System.out.println("Students and Marks seeded.");
         } catch (IOException | SQLException e) {
-            System.err.println("Failed to seed students: " + e.getMessage());
+            System.err.println("Failed to seed students and marks: " + e.getMessage());
         }
     }
 }

@@ -6,25 +6,14 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
-/**
- * Form view to input and edit student result data.
- */
 public class FormView extends JPanel {
 
-    private JTextField usnField;
-    private JTextField nameField;
-    private JTextField emailField;
-    private JTextField sub1Field;
-    private JTextField sub2Field;
-    private JTextField sub3Field;
+    private JTextField usnField, nameField, batchField, teamNoField, topicField;
+    private JTextField dsaField, adaField, dbmsField, mathField, pythonField, javaField, sipField;
     
-    private JLabel totalLabel;
-    private JLabel averageLabel;
-    private JLabel gradeLabel;
+    private JLabel totalLabel, averageLabel, gradeLabel;
 
-    private JButton calculateButton;
-    private JButton saveButton;
-    private JButton clearButton;
+    private JButton calculateButton, saveButton, clearButton;
 
     private final StudentResultDAO dao;
     private final TableView tableViewToRefresh;
@@ -36,54 +25,44 @@ public class FormView extends JPanel {
     }
 
     private void initComponents() {
-        setLayout(new MigLayout("wrap 2, insets 20", "[right][grow,fill]", "[]15[]"));
+        setLayout(new MigLayout("wrap 4, insets 20", "[right][grow,fill][right][grow,fill]", "[]10[]"));
 
-        // Add form fields
-        add(new JLabel("USN:"));
-        usnField = new JTextField(20);
-        add(usnField);
+        add(new JLabel("USN:")); usnField = new JTextField(20); add(usnField);
+        add(new JLabel("Name:")); nameField = new JTextField(20); add(nameField);
+        
+        add(new JLabel("Batch:")); batchField = new JTextField(20); add(batchField);
+        add(new JLabel("Team No:")); teamNoField = new JTextField(20); add(teamNoField);
+        
+        add(new JLabel("Topic:")); topicField = new JTextField(20); add(topicField, "span 3");
 
-        add(new JLabel("Name:"));
-        nameField = new JTextField(20);
-        add(nameField);
+        add(new JSeparator(), "span, growx, wrap");
 
-        add(new JLabel("Email:"));
-        emailField = new JTextField(20);
-        add(emailField);
+        add(new JLabel("DSA Marks:")); dsaField = new JTextField(10); add(dsaField);
+        add(new JLabel("ADA Marks:")); adaField = new JTextField(10); add(adaField);
+        
+        add(new JLabel("DBMS Marks:")); dbmsField = new JTextField(10); add(dbmsField);
+        add(new JLabel("Math Marks:")); mathField = new JTextField(10); add(mathField);
+        
+        add(new JLabel("Python Marks:")); pythonField = new JTextField(10); add(pythonField);
+        add(new JLabel("Java Marks:")); javaField = new JTextField(10); add(javaField);
+        
+        add(new JLabel("SIP Marks:")); sipField = new JTextField(10); add(sipField);
+        add(new JLabel(""), "span 2"); // placeholder
 
-        add(new JLabel("Subject 1 Marks:"));
-        sub1Field = new JTextField(20);
-        add(sub1Field);
-
-        add(new JLabel("Subject 2 Marks:"));
-        sub2Field = new JTextField(20);
-        add(sub2Field);
-
-        add(new JLabel("Subject 3 Marks:"));
-        sub3Field = new JTextField(20);
-        add(sub3Field);
-
-        // Results display labels
         add(new JSeparator(), "span, growx, wrap");
         
         add(new JLabel("Calculated Total:"));
         totalLabel = new JLabel("0.00");
         totalLabel.setFont(totalLabel.getFont().deriveFont(java.awt.Font.BOLD));
-        add(totalLabel);
-
-        add(new JLabel("Calculated Average:"));
-        averageLabel = new JLabel("0.00");
-        averageLabel.setFont(averageLabel.getFont().deriveFont(java.awt.Font.BOLD));
-        add(averageLabel);
+        add(totalLabel, "span 3");
 
         add(new JLabel("Calculated Grade:"));
         gradeLabel = new JLabel("N/A");
         gradeLabel.setFont(gradeLabel.getFont().deriveFont(java.awt.Font.BOLD));
-        add(gradeLabel);
+        add(gradeLabel, "span 3");
 
         add(new JSeparator(), "span, growx, wrap");
 
-        // Buttons panel
         JPanel buttonPanel = new JPanel(new MigLayout("", "[grow][grow][grow]", ""));
         calculateButton = new JButton("Calculate");
         saveButton = new JButton("Save Result");
@@ -93,50 +72,43 @@ public class FormView extends JPanel {
         buttonPanel.add(saveButton, "growx");
         buttonPanel.add(clearButton, "growx");
 
-        add(buttonPanel, "span 2, growx");
+        add(buttonPanel, "span 4, growx");
 
-        // Event Listeners
         calculateButton.addActionListener(e -> calculateLocally());
         saveButton.addActionListener(e -> saveResult());
         clearButton.addActionListener(e -> clearForm());
     }
 
-    /**
-     * Validates input and calculates derived fields locally.
-     * Fulfills input validation constraints.
-     */
     private Student calculateLocally() {
         try {
             String usn = usnField.getText().trim();
             String name = nameField.getText().trim();
-            String email = emailField.getText().trim();
+            String topic = topicField.getText().trim();
 
-            if (usn.isEmpty() || name.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "USN and Name are required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            if (usn.isEmpty() || name.isEmpty() || topic.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "USN, Name, and Topic are required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
-            double sub1 = Double.parseDouble(sub1Field.getText().trim());
-            double sub2 = Double.parseDouble(sub2Field.getText().trim());
-            double sub3 = Double.parseDouble(sub3Field.getText().trim());
+            int batch = Integer.parseInt(batchField.getText().trim());
+            int teamNo = Integer.parseInt(teamNoField.getText().trim());
 
-            if (sub1 < 0 || sub1 > 100 || sub2 < 0 || sub2 > 100 || sub3 < 0 || sub3 > 100) {
-                 JOptionPane.showMessageDialog(this, "Marks must be between 0 and 100.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                 return null;
-            }
+            double dsa = Double.parseDouble(dsaField.getText().trim());
+            double ada = Double.parseDouble(adaField.getText().trim());
+            double dbms = Double.parseDouble(dbmsField.getText().trim());
+            double math = Double.parseDouble(mathField.getText().trim());
+            double python = Double.parseDouble(pythonField.getText().trim());
+            double javaMarks = Double.parseDouble(javaField.getText().trim());
+            double sip = Double.parseDouble(sipField.getText().trim());
 
-            // Create model object (inherits Person, implements Gradable)
-            Student student = new Student(usn, name, email, sub1, sub2, sub3);
+            Student student = new Student(usn, name, batch, teamNo, topic, dsa, ada, dbms, math, python, javaMarks, sip);
             
-            // Update UI
-            totalLabel.setText(String.format("%.2f", student.getTotal()));
-            averageLabel.setText(String.format("%.2f", student.getAverage()));
-            gradeLabel.setText(student.getGrade());
+            totalLabel.setText(String.format("%.2f", student.getTotalScore()));
+            gradeLabel.setText(student.calculateGrade());
 
             return student;
-
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Please enter valid numeric values for marks.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter valid numeric values.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
@@ -158,14 +130,10 @@ public class FormView extends JPanel {
     }
 
     private void clearForm() {
-        usnField.setText("");
-        nameField.setText("");
-        emailField.setText("");
-        sub1Field.setText("");
-        sub2Field.setText("");
-        sub3Field.setText("");
-        totalLabel.setText("0.00");
-        averageLabel.setText("0.00");
-        gradeLabel.setText("N/A");
+        usnField.setText(""); nameField.setText("");
+        batchField.setText(""); teamNoField.setText(""); topicField.setText("");
+        dsaField.setText(""); adaField.setText(""); dbmsField.setText("");
+        mathField.setText(""); pythonField.setText(""); javaField.setText(""); sipField.setText("");
+        totalLabel.setText("0.00"); gradeLabel.setText("N/A");
     }
 }

@@ -32,6 +32,13 @@ public class NavigationController {
     }
 
     /**
+     * Retrieves a registered view by name.
+     */
+    public JPanel getView(String name) {
+        return registeredViews.get(name);
+    }
+
+    /**
      * Swaps the active display to the specified view.
      */
     public void showView(String name) {

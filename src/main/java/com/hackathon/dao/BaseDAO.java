@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Abstract Base DAO providing reusable utility wrappers for boilerplate JDBC operations.
+ * Abstract Base DAO providing reusable utility wrappers for boilerplate JDBC
+ * operations.
  * Encourages Abstraction and DRY (Don't Repeat Yourself) design principles.
  *
  * @param <T>  The domain entity type
  * @param <ID> The entity's primary key identifier type
  */
+
 public abstract class BaseDAO<T, ID> implements GenericDAO<T, ID> {
 
     /**
@@ -30,8 +32,8 @@ public abstract class BaseDAO<T, ID> implements GenericDAO<T, ID> {
     protected List<T> executeQuery(String sql, RowMapper<T> mapper, Object... params) {
         List<T> results = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
             setParameters(ps, params);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -49,8 +51,8 @@ public abstract class BaseDAO<T, ID> implements GenericDAO<T, ID> {
      */
     protected Optional<T> executeQuerySingle(String sql, RowMapper<T> mapper, Object... params) {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
             setParameters(ps, params);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -70,8 +72,8 @@ public abstract class BaseDAO<T, ID> implements GenericDAO<T, ID> {
      */
     protected int executeUpdate(String sql, Object... params) {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
             setParameters(ps, params);
             return ps.executeUpdate();
         } catch (SQLException e) {
@@ -87,8 +89,8 @@ public abstract class BaseDAO<T, ID> implements GenericDAO<T, ID> {
      */
     protected Long executeInsertAndGetGeneratedKey(String sql, Object... params) {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
+                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             setParameters(ps, params);
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
@@ -125,7 +127,8 @@ public abstract class BaseDAO<T, ID> implements GenericDAO<T, ID> {
     }
 
     /**
-     * Centralized exception logging or handling. Can be extended to throw custom runtime exceptions.
+     * Centralized exception logging or handling. Can be extended to throw custom
+     * runtime exceptions.
      */
     protected void handleException(String message, SQLException e) {
         System.err.println(message);

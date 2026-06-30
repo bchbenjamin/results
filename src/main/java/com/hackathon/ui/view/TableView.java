@@ -10,9 +10,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Table view displaying all student results with search functionality.
- */
 public class TableView extends JPanel {
 
     private JTable table;
@@ -33,7 +30,6 @@ public class TableView extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Top Panel: Search Bar
         JPanel topPanel = new JPanel(new MigLayout("", "[grow][][][]", "[]"));
         searchField = new JTextField(20);
         searchButton = new JButton("Search by USN");
@@ -46,12 +42,11 @@ public class TableView extends JPanel {
         
         add(topPanel, BorderLayout.NORTH);
 
-        // Center Panel: Table
-        String[] columns = {"USN", "Name", "Email", "Sub 1", "Sub 2", "Sub 3", "Total", "Average", "Grade"};
+        String[] columns = {"USN", "Name", "Batch", "Team", "Topic", "DSA", "ADA", "DBMS", "Math", "Python", "Java", "SIP", "Total", "Grade"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // read-only table
+                return false;
             }
         };
         table = new JTable(tableModel);
@@ -60,7 +55,6 @@ public class TableView extends JPanel {
         
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // Listeners
         searchButton.addActionListener(e -> performSearch());
         clearButton.addActionListener(e -> {
             searchField.setText("");
@@ -69,7 +63,7 @@ public class TableView extends JPanel {
     }
 
     public void refreshTable() {
-        tableModel.setRowCount(0); // clear
+        tableModel.setRowCount(0);
         List<Student> students = dao.findAll();
         for (Student s : students) {
             addStudentToTable(s);
@@ -89,7 +83,7 @@ public class TableView extends JPanel {
             addStudentToTable(studentOpt.get());
         } else {
             JOptionPane.showMessageDialog(this, "No student found with USN: " + usn, "Search Result", JOptionPane.INFORMATION_MESSAGE);
-            refreshTable(); // reset table if not found
+            refreshTable();
         }
     }
 
@@ -97,13 +91,18 @@ public class TableView extends JPanel {
         tableModel.addRow(new Object[]{
                 s.getUsn(),
                 s.getName(),
-                s.getEmail(),
-                String.format("%.2f", s.getSub1()),
-                String.format("%.2f", s.getSub2()),
-                String.format("%.2f", s.getSub3()),
-                String.format("%.2f", s.getTotal()),
-                String.format("%.2f", s.getAverage()),
-                s.getGrade()
+                s.getBatch(),
+                s.getTeamNo(),
+                s.getTopic(),
+                String.format("%.2f", s.getDsa()),
+                String.format("%.2f", s.getAda()),
+                String.format("%.2f", s.getDbms()),
+                String.format("%.2f", s.getMath()),
+                String.format("%.2f", s.getPython()),
+                String.format("%.2f", s.getJavaMarks()),
+                String.format("%.2f", s.getSip()),
+                String.format("%.2f", s.getTotalScore()),
+                s.calculateGrade()
         });
     }
 }
