@@ -1,0 +1,14 @@
+{
+  "database": {
+    "local-mysql": {
+      "host": "127.0.0.1",
+      "port": 3306,
+      "user": "bchbenjamin",
+      "password": "",
+      "dbType": "MySQL",
+      "database": "hackathon_db",
+      "name": "Local MySQL",
+      "key": "local-mysql"
+    }
+  }
+}
