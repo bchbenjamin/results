@@ -13,47 +13,23 @@ public class DatabaseInitializer {
      * Executes DDL to set up the necessary database tables.
      */
     public static void initializeDatabase() {
-        String createStudentsSQL = "CREATE TABLE IF NOT EXISTS students ("
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS student_results ("
                 + "usn VARCHAR(20) PRIMARY KEY, "
                 + "name VARCHAR(255) NOT NULL, "
-                + "batch INT NOT NULL, "
-                + "team_no INT NOT NULL, "
-                + "topic VARCHAR(500) NOT NULL"
-                + ");";
-
-        String createMarksSQL = "CREATE TABLE IF NOT EXISTS marks ("
-                + "usn VARCHAR(20) PRIMARY KEY, "
-                + "dsa DOUBLE DEFAULT 0, "
-                + "ada DOUBLE DEFAULT 0, "
-                + "dbms DOUBLE DEFAULT 0, "
-                + "math DOUBLE DEFAULT 0, "
-                + "python DOUBLE DEFAULT 0, "
-                + "java DOUBLE DEFAULT 0, "
-                + "sip DOUBLE DEFAULT 0, "
-                + "total_score DOUBLE DEFAULT 0, "
-                + "FOREIGN KEY (usn) REFERENCES students(usn)"
-                + ");";
-
-        String createEvaluatorsSQL = "CREATE TABLE IF NOT EXISTS evaluators ("
-                + "evaluator_id VARCHAR(10) PRIMARY KEY, "
-                + "name VARCHAR(255) NOT NULL, "
-                + "core_subject VARCHAR(50) NOT NULL"
-                + ");";
-
-        String createSipMappingSQL = "CREATE TABLE IF NOT EXISTS sip_mapping ("
-                + "topic VARCHAR(500) PRIMARY KEY, "
-                + "evaluator_id VARCHAR(10) NOT NULL, "
-                + "FOREIGN KEY (evaluator_id) REFERENCES evaluators(evaluator_id)"
+                + "email VARCHAR(255), "
+                + "sub1 DOUBLE NOT NULL, "
+                + "sub2 DOUBLE NOT NULL, "
+                + "sub3 DOUBLE NOT NULL, "
+                + "total DOUBLE NOT NULL, "
+                + "average DOUBLE NOT NULL, "
+                + "grade VARCHAR(5) NOT NULL"
                 + ");";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
             
-            stmt.execute(createStudentsSQL);
-            stmt.execute(createMarksSQL);
-            stmt.execute(createEvaluatorsSQL);
-            stmt.execute(createSipMappingSQL);
-            System.out.println("Database schema checked/initialized successfully with 4 tables.");
+            stmt.execute(createTableSQL);
+            System.out.println("Database schema initialized: student_results table created.");
             
         } catch (SQLException e) {
             System.err.println("Error initializing database schema: " + e.getMessage());

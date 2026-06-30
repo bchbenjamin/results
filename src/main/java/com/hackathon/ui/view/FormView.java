@@ -1,159 +1,171 @@
 package com.hackathon.ui.view;
 
-import com.hackathon.dao.ItemDAO;
-import com.hackathon.model.Item;
-import com.hackathon.ui.NavigationController;
+import com.hackathon.dao.StudentResultDAO;
+import com.hackathon.model.Student;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
-import java.math.BigDecimal;
 
 /**
- * Modular data entry Form View using MigLayout.
- * Incorporates validation, clear visual prompts, and direct interaction with the model layer.
+ * Form view to input and edit student result data.
  */
-public class FormView extends JPanel implements NavigationController.ViewLifecycle {
-    private final ItemDAO itemDAO;
-    private final NavigationController navController;
+public class FormView extends JPanel {
 
-    private final JTextField nameField;
-    private final JTextField priceField;
-    private final JTextArea descArea;
-    private final JLabel statusLabel;
+    private JTextField usnField;
+    private JTextField nameField;
+    private JTextField emailField;
+    private JTextField sub1Field;
+    private JTextField sub2Field;
+    private JTextField sub3Field;
+    
+    private JLabel totalLabel;
+    private JLabel averageLabel;
+    private JLabel gradeLabel;
 
-    public FormView(ItemDAO itemDAO, NavigationController navController) {
-        this.itemDAO = itemDAO;
-        this.navController = navController;
+    private JButton calculateButton;
+    private JButton saveButton;
+    private JButton clearButton;
 
-        // MigLayout configuration: 
-        // - wrap 2: create 2-column grid layout
-        // - insets 30: 30px padding around boundaries
-        // - gap 15 15: 15px gap horizontally and vertically
-        // - Column constraints: [right, pref!] (col 0 is right-aligned, minimum fit) 
-        //                     [grow, fill] (col 1 occupies all remaining horizontal space)
-        setLayout(new MigLayout("insets 30, wrap 2, gap 15 15", "[right, pref!]15[grow, fill]", "[]"));
+    private final StudentResultDAO dao;
+    private final TableView tableViewToRefresh;
 
-        // Title Section
-        JLabel titleLabel = new JLabel("Create Catalog Item");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        add(titleLabel, "span 2, gapbottom 20");
+    public FormView(TableView tableViewToRefresh) {
+        this.dao = new StudentResultDAO();
+        this.tableViewToRefresh = tableViewToRefresh;
+        initComponents();
+    }
 
-        // Form Fields
-        add(new JLabel("Item Name:"));
-        nameField = new JTextField();
-        nameField.putClientProperty("JTextField.placeholderText", "Enter product name");
+    private void initComponents() {
+        setLayout(new MigLayout("wrap 2, insets 20", "[right][grow,fill]", "[]15[]"));
+
+        // Add form fields
+        add(new JLabel("USN:"));
+        usnField = new JTextField(20);
+        add(usnField);
+
+        add(new JLabel("Name:"));
+        nameField = new JTextField(20);
         add(nameField);
 
-        add(new JLabel("Price ($):"));
-        priceField = new JTextField();
-        priceField.putClientProperty("JTextField.placeholderText", "0.00");
-        add(priceField);
+        add(new JLabel("Email:"));
+        emailField = new JTextField(20);
+        add(emailField);
 
-        add(new JLabel("Description:"));
-        descArea = new JTextArea();
-        descArea.setLineWrap(true);
-        descArea.setWrapStyleWord(true);
-        descArea.putClientProperty("JTextField.placeholderText", "Describe the item"); // Supported in FlatLaf for textarea as well
-        JScrollPane descScrollPane = new JScrollPane(descArea);
-        add(descScrollPane, "height 120::200");
+        add(new JLabel("Subject 1 Marks:"));
+        sub1Field = new JTextField(20);
+        add(sub1Field);
 
-        // Action Panel (Status Label and Buttons)
-        statusLabel = new JLabel(" ");
-        statusLabel.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+        add(new JLabel("Subject 2 Marks:"));
+        sub2Field = new JTextField(20);
+        add(sub2Field);
 
-        JButton clearBtn = new JButton("Clear");
-        clearBtn.addActionListener(e -> resetForm());
+        add(new JLabel("Subject 3 Marks:"));
+        sub3Field = new JTextField(20);
+        add(sub3Field);
 
-        JButton submitBtn = new JButton("Save Item");
-        // Apply secondary styling command if supported (FlatLaf accent color styling)
-        submitBtn.putClientProperty("JButton.buttonType", "accent");
-        submitBtn.addActionListener(e -> saveItem());
+        // Results display labels
+        add(new JSeparator(), "span, growx, wrap");
+        
+        add(new JLabel("Calculated Total:"));
+        totalLabel = new JLabel("0.00");
+        totalLabel.setFont(totalLabel.getFont().deriveFont(java.awt.Font.BOLD));
+        add(totalLabel);
 
-        JPanel actionPanel = new JPanel(new MigLayout("insets 0, gap 10", "[grow][pref!][pref!]"));
-        actionPanel.add(statusLabel, "grow");
-        actionPanel.add(clearBtn, "width 90!");
-        actionPanel.add(submitBtn, "width 120!");
+        add(new JLabel("Calculated Average:"));
+        averageLabel = new JLabel("0.00");
+        averageLabel.setFont(averageLabel.getFont().deriveFont(java.awt.Font.BOLD));
+        add(averageLabel);
 
-        add(actionPanel, "span 2, growx, gaptop 15");
+        add(new JLabel("Calculated Grade:"));
+        gradeLabel = new JLabel("N/A");
+        gradeLabel.setFont(gradeLabel.getFont().deriveFont(java.awt.Font.BOLD));
+        add(gradeLabel);
+
+        add(new JSeparator(), "span, growx, wrap");
+
+        // Buttons panel
+        JPanel buttonPanel = new JPanel(new MigLayout("", "[grow][grow][grow]", ""));
+        calculateButton = new JButton("Calculate");
+        saveButton = new JButton("Save Result");
+        clearButton = new JButton("Clear Form");
+
+        buttonPanel.add(calculateButton, "growx");
+        buttonPanel.add(saveButton, "growx");
+        buttonPanel.add(clearButton, "growx");
+
+        add(buttonPanel, "span 2, growx");
+
+        // Event Listeners
+        calculateButton.addActionListener(e -> calculateLocally());
+        saveButton.addActionListener(e -> saveResult());
+        clearButton.addActionListener(e -> clearForm());
     }
 
     /**
-     * Resets all input elements in the form.
+     * Validates input and calculates derived fields locally.
+     * Fulfills input validation constraints.
      */
-    private void resetForm() {
-        nameField.setText("");
-        priceField.setText("");
-        descArea.setText("");
-        statusLabel.setText(" ");
-        statusLabel.setForeground(null);
-    }
-
-    /**
-     * Reads form fields, performs validations, and persists entity via DAO.
-     */
-    private void saveItem() {
-        String name = nameField.getText().trim();
-        String priceText = priceField.getText().trim();
-        String description = descArea.getText().trim();
-
-        // 1. Validation: Check empty inputs
-        if (name.isEmpty()) {
-            showError("Item Name is required!");
-            nameField.requestFocus();
-            return;
-        }
-
-        if (priceText.isEmpty()) {
-            showError("Price is required!");
-            priceField.requestFocus();
-            return;
-        }
-
-        // 2. Validation: Numeric check
-        BigDecimal price;
+    private Student calculateLocally() {
         try {
-            price = new BigDecimal(priceText);
-            if (price.compareTo(BigDecimal.ZERO) < 0) {
-                showError("Price cannot be negative!");
-                priceField.requestFocus();
-                return;
+            String usn = usnField.getText().trim();
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
+
+            if (usn.isEmpty() || name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "USN and Name are required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return null;
             }
-        } catch (NumberFormatException e) {
-            showError("Price must be a valid decimal number!");
-            priceField.requestFocus();
-            return;
-        }
 
-        // 3. Persist Model
-        try {
-            Item item = new Item(name, description, price);
-            itemDAO.save(item);
+            double sub1 = Double.parseDouble(sub1Field.getText().trim());
+            double sub2 = Double.parseDouble(sub2Field.getText().trim());
+            double sub3 = Double.parseDouble(sub3Field.getText().trim());
+
+            if (sub1 < 0 || sub1 > 100 || sub2 < 0 || sub2 > 100 || sub3 < 0 || sub3 > 100) {
+                 JOptionPane.showMessageDialog(this, "Marks must be between 0 and 100.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                 return null;
+            }
+
+            // Create model object (inherits Person, implements Gradable)
+            Student student = new Student(usn, name, email, sub1, sub2, sub3);
             
-            // Show Success Notification
-            JOptionPane.showMessageDialog(this,
-                    "Item '" + name + "' saved successfully with ID " + item.getId() + "!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-            
-            resetForm();
-            
-            // Navigate back to the Catalog Table View
-            navController.showView("CATALOG_VIEW");
-        } catch (Exception e) {
-            showError("Database error occurred: " + e.getMessage());
+            // Update UI
+            totalLabel.setText(String.format("%.2f", student.getTotal()));
+            averageLabel.setText(String.format("%.2f", student.getAverage()));
+            gradeLabel.setText(student.getGrade());
+
+            return student;
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Please enter valid numeric values for marks.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return null;
         }
     }
 
-    private void showError(String message) {
-        statusLabel.setText(message);
-        statusLabel.setForeground(Color.RED);
+    private void saveResult() {
+        Student student = calculateLocally();
+        if (student != null) {
+            try {
+                dao.save(student);
+                JOptionPane.showMessageDialog(this, "Student result saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                if (tableViewToRefresh != null) {
+                    tableViewToRefresh.refreshTable();
+                }
+                clearForm();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
-    @Override
-    public void onViewShown() {
-        // Reset when entering page fresh
-        resetForm();
-        nameField.requestFocus();
+    private void clearForm() {
+        usnField.setText("");
+        nameField.setText("");
+        emailField.setText("");
+        sub1Field.setText("");
+        sub2Field.setText("");
+        sub3Field.setText("");
+        totalLabel.setText("0.00");
+        averageLabel.setText("0.00");
+        gradeLabel.setText("N/A");
     }
 }
