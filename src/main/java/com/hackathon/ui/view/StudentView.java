@@ -27,9 +27,22 @@ public class StudentView extends JPanel {
     private void initComponents() {
         setLayout(new MigLayout("wrap 2, insets 20", "[right][grow,fill]", "[]15[]"));
 
+        JPanel topPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
         JButton backBtn = new JButton("Back to Roles");
         backBtn.addActionListener(e -> nav.showView("RoleSelection"));
-        add(backBtn, "span 2, left, wrap");
+        topPanel.add(backBtn);
+        
+        JButton leaderBtn = new JButton("View Leaderboards");
+        leaderBtn.addActionListener(e -> {
+            LeaderboardView lv = (LeaderboardView) nav.getView("LeaderboardView");
+            if (lv != null) {
+                lv.loadLeaderboards();
+                nav.showView("LeaderboardView");
+            }
+        });
+        topPanel.add(leaderBtn);
+        
+        add(topPanel, "span 2, growx, wrap");
 
         add(new JLabel("Name:"));
         nameLabel = new JLabel(); nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD)); add(nameLabel);

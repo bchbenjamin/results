@@ -5,8 +5,10 @@ com/hackathon/ui/view/RoleSelectionView.class
 com/hackathon/model/Person.class
 com/hackathon/db/DatabaseInitializer.class
 com/hackathon/dao/GenericDAO.class
+com/hackathon/ui/view/LeaderboardView$1.class
 com/hackathon/dao/StudentResultDAO.class
 com/hackathon/ui/MainWindow.class
+com/hackathon/ui/view/LeaderboardView.class
 com/hackathon/db/DataSeeder.class
 com/hackathon/model/Item.class
 com/hackathon/model/Gradable.class
@@ -20,6 +22,7 @@ com/hackathon/model/Student.class
 com/hackathon/App.class
 com/hackathon/ui/view/TableView$1.class
 com/hackathon/dao/ItemDAO.class
+com/hackathon/model/LeaderboardService.class
 com/hackathon/ui/view/FormView.class
 com/hackathon/ui/NavigationController$ViewLifecycle.class
 com/hackathon/ui/view/TableView.class
