@@ -50,10 +50,12 @@ public class StudentResultDAO extends BaseDAO<Student, String> {
 
     @Override
     public Student save(Student entity) {
-        String sqlStudent = "MERGE INTO Students (USN, Name, Batch, Team_No, Topic) KEY(USN) VALUES (?, ?, ?, ?, ?)";
+        String sqlStudent = "INSERT INTO Students (USN, Name, Batch, Team_No, Topic) VALUES (?, ?, ?, ?, ?) " +
+                            "ON DUPLICATE KEY UPDATE Name=VALUES(Name), Batch=VALUES(Batch), Team_No=VALUES(Team_No), Topic=VALUES(Topic)";
         executeUpdate(sqlStudent, entity.getUsn(), entity.getName(), entity.getBatch(), entity.getTeamNo(), entity.getTopic());
         
-        String sqlMarks = "MERGE INTO Marks (USN, DSA, ADA, DBMS, Math, Python, Java, SIP, Total_Score) KEY(USN) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlMarks = "INSERT INTO Marks (USN, DSA, ADA, DBMS, Math, Python, Java, SIP, Total_Score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                          "ON DUPLICATE KEY UPDATE DSA=VALUES(DSA), ADA=VALUES(ADA), DBMS=VALUES(DBMS), Math=VALUES(Math), Python=VALUES(Python), Java=VALUES(Java), SIP=VALUES(SIP), Total_Score=VALUES(Total_Score)";
         executeUpdate(sqlMarks, entity.getUsn(), entity.getDsa(), entity.getAda(), entity.getDbms(), entity.getMath(), entity.getPython(), entity.getJavaMarks(), entity.getSip(), entity.getTotalScore());
         
         return entity;

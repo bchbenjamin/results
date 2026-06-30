@@ -46,10 +46,22 @@ public class TableView extends JPanel {
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return column >= 5 && column <= 11; // Allow editing marks (DSA to SIP)
             }
         };
+        
+        tableModel.addTableModelListener(e -> {
+            if (e.getType() == javax.swing.event.TableModelEvent.UPDATE) {
+                int row = e.getFirstRow();
+                int col = e.getColumn();
+                if (col >= 5 && col <= 11) {
+                    updateStudentMarks(row, col);
+                }
+            }
+        });
+        
         table = new JTable(tableModel);
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         table.setFillsViewportHeight(true);
         table.setRowHeight(25);
         
@@ -104,5 +116,35 @@ public class TableView extends JPanel {
                 String.format("%.2f", s.getTotalScore()),
                 s.calculateGrade()
         });
+    }
+
+    private void updateStudentMarks(int row, int col) {
+        String usn = (String) tableModel.getValueAt(row, 0);
+        String valStr = tableModel.getValueAt(row, col).toString();
+        try {
+            double newMarks = Double.parseDouble(valStr);
+            if (newMarks < 0 || newMarks > 100) throw new NumberFormatException();
+            
+            Optional<Student> sOpt = dao.findById(usn);
+            if (sOpt.isPresent()) {
+                Student s = sOpt.get();
+                switch (col) {
+                    case 5: s.setDsa(newMarks); break;
+                    case 6: s.setAda(newMarks); break;
+                    case 7: s.setDbms(newMarks); break;
+                    case 8: s.setMath(newMarks); break;
+                    case 9: s.setPython(newMarks); break;
+                    case 10: s.setJavaMarks(newMarks); break;
+                    case 11: s.setSip(newMarks); break;
+                }
+                dao.save(s);
+                // Refresh the row to show updated total and grade
+                tableModel.setValueAt(String.format("%.2f", s.getTotalScore()), row, 12);
+                tableModel.setValueAt(s.calculateGrade(), row, 13);
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid marks entered.", "Error", JOptionPane.ERROR_MESSAGE);
+            SwingUtilities.invokeLater(this::refreshTable); // revert invalid change safely
+        }
     }
 }

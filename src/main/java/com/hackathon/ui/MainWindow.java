@@ -61,6 +61,7 @@ public class MainWindow extends JFrame {
         nav.registerView("RoleSelection", new RoleSelectionView(nav, this));
         nav.registerView("StudentView", new StudentView(nav));
         nav.registerView("EvaluatorView", new EvaluatorView(nav));
+        nav.registerView("LeaderboardView", new com.hackathon.ui.view.LeaderboardView(nav));
         nav.registerView("AdminView", adminWrapper);
 
         add(container, BorderLayout.CENTER);

@@ -16,7 +16,7 @@ public class StudentView extends JPanel {
     
     private JLabel nameLabel, usnLabel, topicLabel;
     private JLabel dsaLabel, adaLabel, dbmsLabel, mathLabel, pythonLabel, javaLabel, sipLabel;
-    private JLabel totalLabel, gradeLabel;
+    private JLabel totalLabel, averageLabel, gradeLabel;
 
     public StudentView(NavigationController nav) {
         this.nav = nav;
@@ -29,7 +29,14 @@ public class StudentView extends JPanel {
 
         JButton backBtn = new JButton("Back to Roles");
         backBtn.addActionListener(e -> nav.showView("RoleSelection"));
-        add(backBtn, "span 2, left, wrap");
+        
+        JButton leaderBtn = new JButton("View Leaderboards");
+        leaderBtn.addActionListener(e -> nav.showView("LeaderboardView"));
+        
+        JPanel topBtnPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        topBtnPanel.add(backBtn);
+        topBtnPanel.add(leaderBtn);
+        add(topBtnPanel, "span 2, left, wrap");
 
         add(new JLabel("Name:"));
         nameLabel = new JLabel(); nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD)); add(nameLabel);
@@ -55,6 +62,9 @@ public class StudentView extends JPanel {
         add(new JLabel("Total Score:"));
         totalLabel = new JLabel(); totalLabel.setFont(totalLabel.getFont().deriveFont(Font.BOLD, 18f)); add(totalLabel);
         
+        add(new JLabel("Average:"));
+        averageLabel = new JLabel(); averageLabel.setFont(averageLabel.getFont().deriveFont(Font.BOLD, 18f)); add(averageLabel);
+        
         add(new JLabel("Grade:"));
         gradeLabel = new JLabel(); gradeLabel.setFont(gradeLabel.getFont().deriveFont(Font.BOLD, 18f)); add(gradeLabel);
     }
@@ -76,6 +86,7 @@ public class StudentView extends JPanel {
             sipLabel.setText(String.format("%.2f", currentStudent.getSip()));
             
             totalLabel.setText(String.format("%.2f", currentStudent.getTotalScore()));
+            averageLabel.setText(String.format("%.2f", currentStudent.calculateAverage()));
             gradeLabel.setText(currentStudent.calculateGrade());
             return true;
         }

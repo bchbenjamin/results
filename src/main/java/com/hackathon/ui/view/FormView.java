@@ -56,6 +56,11 @@ public class FormView extends JPanel {
         totalLabel.setFont(totalLabel.getFont().deriveFont(java.awt.Font.BOLD));
         add(totalLabel, "span 3");
 
+        add(new JLabel("Calculated Average:"));
+        averageLabel = new JLabel("0.00");
+        averageLabel.setFont(averageLabel.getFont().deriveFont(java.awt.Font.BOLD));
+        add(averageLabel, "span 3");
+
         add(new JLabel("Calculated Grade:"));
         gradeLabel = new JLabel("N/A");
         gradeLabel.setFont(gradeLabel.getFont().deriveFont(java.awt.Font.BOLD));
@@ -104,6 +109,7 @@ public class FormView extends JPanel {
             Student student = new Student(usn, name, batch, teamNo, topic, dsa, ada, dbms, math, python, javaMarks, sip);
             
             totalLabel.setText(String.format("%.2f", student.getTotalScore()));
+            averageLabel.setText(String.format("%.2f", student.calculateAverage()));
             gradeLabel.setText(student.calculateGrade());
 
             return student;
@@ -134,6 +140,6 @@ public class FormView extends JPanel {
         batchField.setText(""); teamNoField.setText(""); topicField.setText("");
         dsaField.setText(""); adaField.setText(""); dbmsField.setText("");
         mathField.setText(""); pythonField.setText(""); javaField.setText(""); sipField.setText("");
-        totalLabel.setText("0.00"); gradeLabel.setText("N/A");
+        totalLabel.setText("0.00"); averageLabel.setText("0.00"); gradeLabel.setText("N/A");
     }
 }

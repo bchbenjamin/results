@@ -27,7 +27,8 @@ public class DataSeeder {
     }
 
     private static void seedEvaluators(Connection conn, String filePath) {
-        String sql = "MERGE INTO Evaluators (Evaluator_ID, Name, Core_Subject) KEY(Evaluator_ID) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Evaluators (Evaluator_ID, Name, Core_Subject) VALUES (?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE Name=VALUES(Name), Core_Subject=VALUES(Core_Subject)";
         try (BufferedReader br = new BufferedReader(new FileReader(filePath));
              PreparedStatement ps = conn.prepareStatement(sql)) {
             String line;
@@ -50,7 +51,8 @@ public class DataSeeder {
     }
 
     private static void seedSIPMapping(Connection conn, String filePath) {
-        String sql = "MERGE INTO SIP_Mapping (Topic, Evaluator_ID) KEY(Topic) VALUES (?, ?)";
+        String sql = "INSERT INTO SIP_Mapping (Topic, Evaluator_ID) VALUES (?, ?) " +
+                     "ON DUPLICATE KEY UPDATE Evaluator_ID=VALUES(Evaluator_ID)";
         try (BufferedReader br = new BufferedReader(new FileReader(filePath));
              PreparedStatement ps = conn.prepareStatement(sql)) {
             String line;
@@ -72,8 +74,10 @@ public class DataSeeder {
     }
 
     private static void seedStudentsAndMarks(Connection conn, String filePath) {
-        String sqlStudent = "MERGE INTO Students (USN, Name, Batch, Team_No, Topic) KEY(USN) VALUES (?, ?, ?, ?, ?)";
-        String sqlMarks = "MERGE INTO Marks (USN, DSA, ADA, DBMS, Math, Python, Java, SIP, Total_Score) KEY(USN) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlStudent = "INSERT INTO Students (USN, Name, Batch, Team_No, Topic) VALUES (?, ?, ?, ?, ?) " +
+                            "ON DUPLICATE KEY UPDATE Name=VALUES(Name), Batch=VALUES(Batch), Team_No=VALUES(Team_No), Topic=VALUES(Topic)";
+        String sqlMarks = "INSERT INTO Marks (USN, DSA, ADA, DBMS, Math, Python, Java, SIP, Total_Score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                          "ON DUPLICATE KEY UPDATE DSA=VALUES(DSA), ADA=VALUES(ADA), DBMS=VALUES(DBMS), Math=VALUES(Math), Python=VALUES(Python), Java=VALUES(Java), SIP=VALUES(SIP), Total_Score=VALUES(Total_Score)";
         
         try (BufferedReader br = new BufferedReader(new FileReader(filePath));
              PreparedStatement psStudent = conn.prepareStatement(sqlStudent);

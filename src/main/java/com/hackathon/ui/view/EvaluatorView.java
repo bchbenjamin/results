@@ -65,6 +65,7 @@ public class EvaluatorView extends JPanel {
         });
 
         table = new JTable(tableModel);
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         table.setFillsViewportHeight(true);
         table.setRowHeight(25);
         add(new JScrollPane(table), BorderLayout.CENTER);

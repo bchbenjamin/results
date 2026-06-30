@@ -33,7 +33,8 @@ public class EvaluatorDAO extends BaseDAO<Evaluator, String> {
 
     @Override
     public Evaluator save(Evaluator entity) {
-        String sql = "MERGE INTO Evaluators (Evaluator_ID, Name, Core_Subject) KEY(Evaluator_ID) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Evaluators (Evaluator_ID, Name, Core_Subject) VALUES (?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE Name=VALUES(Name), Core_Subject=VALUES(Core_Subject)";
         executeUpdate(sql, entity.getEvaluatorId(), entity.getName(), entity.getCoreSubject());
         return entity;
     }
