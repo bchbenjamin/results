@@ -52,7 +52,6 @@ The **Academic Result Management System** is a robust desktop application design
 
 Please refer to the enclosed documentation for deeper insights into the project's design:
 - [PORTAL_ARCHITECTURE.md](./PORTAL_ARCHITECTURE.md): Database normalization, RBAC guidelines, and tie-breaker algorithms.
-- [CODING_STANDARDS.md](./CODING_STANDARDS.md): UI and stylistic guidelines followed during development.
 
 ---
 
@@ -66,10 +65,11 @@ We are thrilled to submit this project for the Java Hackathon! Connect with us:
     <tr>
       <td align="center">
         <b>B C H Benjamin</b><br>
-        <a href="http://linkedin.com/in/bchbenjamin"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
+        <a href="https://www.linkedin.com/in/bchbenjamin"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a><br>
+        <a href="https://github.com/bchbenjamin"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
       </td>
       <td align="center">
-        <b>C Yogeetha</b> (@gitGojo)<br>
+        <b>C Yogeetha</b><br>
         <a href="https://www.linkedin.com/in/c-yogeetha"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a><br>
         <a href="https://github.com/gitGojo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
       </td>
