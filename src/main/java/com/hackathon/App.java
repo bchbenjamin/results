@@ -12,11 +12,12 @@ public class App {
     public static void main(String[] args) {
         System.out.println("Starting application boot sequence...");
 
-        // 1. Initialize Database Schema DDL
+        // 1. Initialize Database Schema DDL and Seed Data
         try {
             DatabaseInitializer.initializeDatabase();
+            com.hackathon.db.DataSeeder.seedAllData();
         } catch (Exception e) {
-            System.err.println("Fatal error: Database initialization failed. Exiting application.");
+            System.err.println("Fatal error: Database initialization or seeding failed. Exiting application.");
             System.exit(1);
         }
 
